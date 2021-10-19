@@ -1,0 +1,25 @@
+{
+  "name": "@mitra98/money-track",
+  "version": "0.0.1",
+  "description": "Track expense locally",
+  "main": "src/index.js",
+  "bin": {
+    "@mitra98/money-track": "bin/money-track",
+    "moneytrack": "bin/money-track",
+    "mt": "bin/money-track"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "money-track"
+  ],
+  "author": "Federico M",
+  "license": "ISC",
+  "dependencies": {
+    "arg": "^5.0.1",
+    "esm": "^3.2.25",
+    "inquirer": "^8.2.0"
+  }
+}
