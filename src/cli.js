@@ -1,9 +1,12 @@
 import arg from 'arg'
 import * as main from './main'
+import fs from 'fs'
+
 function parseArgsToOptions(rowArgs) {
     const args = arg(
         {
             '--help': Boolean,
+            '--list': Boolean,
             '--resolve': Number,
             '--togive': Number,
             '--toreceive': Number,
@@ -11,6 +14,7 @@ function parseArgsToOptions(rowArgs) {
             '--description': String,
             '--importance': Number,
             '--delete': Number,
+            '-l': '--list',
             '-R': '--resolve',
             '-g': '--togive',
             '-r': '--toreceive',
@@ -29,6 +33,7 @@ function parseArgsToOptions(rowArgs) {
     }
 
     resObj.help = args['--help'] ? true : false;
+    resObj.help = args['--list'] ? true : false;
 
     if (args['--resolve']) {
         resObj.resolve = Number(args['--resolve'])
@@ -78,23 +83,26 @@ function parseArgsToOptions(rowArgs) {
 export function cli(args) {
     // console.log(args)
 
+    const { exec } = require('child_process')
+    const homedir = require('os').homedir();
+    const filePath = `${homedir}/.money-track.json`
+    if (!fs.existsSync(filePath)) {
+        exec(`echo '{}' > ${filePath}`)
+    }
+
     let options = parseArgsToOptions(args)
 
-    if (options.help) {
+    if (options.help && !options.list) {
         console.log('Help message')
     }
 
-    if (options.error.includes('missing')) {
-
+    if (options.error.includes('missing') || options.list) {
+        main.list()
     }
     else {
-
         if (options.hasOwnProperty('togive'))
             main.toGive(options)
-
-
+        if (options.hasOwnProperty('toreceive'))
+            main.toReceive(options)
     }
-    console.log(options)
-
-
 }
