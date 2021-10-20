@@ -1,20 +1,19 @@
 import arg from 'arg'
-
+import * as main from './main'
 function parseArgsToOptions(rowArgs) {
     const args = arg(
         {
+            '--help': Boolean,
             '--resolve': Number,
             '--togive': Number,
             '--toreceive': Number,
-            '--title': String,
             '--target': String,
             '--description': String,
             '--importance': Number,
             '--delete': Number,
-            '-r': '--resolve',
+            '-R': '--resolve',
             '-g': '--togive',
             '-r': '--toreceive',
-            '-t': '--title',
             '-T': '--target',
             '-d': '--description',
             '-i': '--importance',
@@ -29,6 +28,8 @@ function parseArgsToOptions(rowArgs) {
         error: ''
     }
 
+    resObj.help = args['--help'] ? true : false;
+
     if (args['--resolve']) {
         resObj.resolve = Number(args['--resolve'])
         return resObj
@@ -39,8 +40,8 @@ function parseArgsToOptions(rowArgs) {
     }
 
 
-    if (args['--title']) {
-        resObj.title = args['--title']
+    if (args._[0]) {
+        resObj.title = args._[0]
     }
     else {
         resObj.title = ''
@@ -66,6 +67,10 @@ function parseArgsToOptions(rowArgs) {
         resObj.error += "missing-value"
     }
 
+    if (!resObj.help && resObj.error.includes('missing') && (resObj.error.includes('title') || resObj.error.includes('value')))
+        resObj.list = true
+    else
+        resObj.list = false
 
     return resObj
 }
@@ -75,5 +80,21 @@ export function cli(args) {
 
     let options = parseArgsToOptions(args)
 
+    if (options.help) {
+        console.log('Help message')
+    }
+
+    if (options.error.includes('missing')) {
+
+    }
+    else {
+
+        if (options.hasOwnProperty('togive'))
+            main.toGive(options)
+
+
+    }
     console.log(options)
+
+
 }

@@ -2,3 +2,12 @@
 
 require = require('esm')(module /*, options */);
 require('../src/cli').cli(process.argv);
+
+const { exec } = require('child_process')
+const fs = require("fs")
+const homedir = require('os').homedir();
+const filePath = `${homedir}/.money-track.json`
+
+if (!fs.existsSync(filePath)) {
+    exec(`echo '{}' > ${filePath}`)
+}
