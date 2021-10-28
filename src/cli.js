@@ -7,6 +7,7 @@ function parseArgsToOptions(rowArgs) {
         {
             '--help': Boolean,
             '--list': Boolean,
+            '--showResolved': Boolean,
             '--resolve': Number,
             '--togive': Number,
             '--toreceive': Number,
@@ -14,6 +15,8 @@ function parseArgsToOptions(rowArgs) {
             '--description': String,
             '--importance': Number,
             '--delete': Number,
+            '--showres': '--showResolved',
+            '--sr': '--showResolved',
             '-l': '--list',
             '-R': '--resolve',
             '-g': '--togive',
@@ -32,12 +35,15 @@ function parseArgsToOptions(rowArgs) {
         error: ''
     }
 
-    resObj.help = args['--help'] ? true : false;
-    resObj.help = args['--list'] ? true : false;
+    resObj.help = args['--help'] ? true : false
+    resObj.list = args['--list'] ? true : false
+    resObj.showRes = args['--showResolved'] ? true : false
 
-    if (args['--resolve']) {
+    if (args['--resolve'] != undefined) {
         resObj.resolve = Number(args['--resolve'])
-        return resObj
+    }
+    else {
+        resObj.resolve = -1
     }
     if (args['--delete']) {
         resObj.delete = Number(args['--delete'])
@@ -91,18 +97,28 @@ export function cli(args) {
     }
 
     let options = parseArgsToOptions(args)
+    // console.log(options)
+
+    if (options.resolve != -1) {
+        main.resolve(options)
+        return
+    }
 
     if (options.help && !options.list) {
         console.log('Help message')
+        return
     }
 
     if (options.error.includes('missing') || options.list) {
-        main.list()
+        main.list(options)
+        return
     }
     else {
         if (options.hasOwnProperty('togive'))
             main.toGive(options)
         if (options.hasOwnProperty('toreceive'))
             main.toReceive(options)
+
+        return
     }
 }

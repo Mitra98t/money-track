@@ -12,6 +12,7 @@ export function toGive(options) {
         target: options.target,
         value: formatter.format(options.togive),
         togive: true,
+        resolved: false,
     }
 
     let parsedData = JSON.parse(fs.readFileSync(filePath))
@@ -24,7 +25,6 @@ export function toGive(options) {
 
     parsedData[index] = object
 
-    console.log(parsedData)
     fs.writeFileSync(filePath, JSON.stringify(parsedData))
 }
 
@@ -38,6 +38,7 @@ export function toReceive(options) {
         target: options.target,
         value: formatter.format(options.toreceive),
         togive: false,
+        resolved: false,
     }
 
     let parsedData = JSON.parse(fs.readFileSync(filePath))
@@ -50,28 +51,62 @@ export function toReceive(options) {
 
     parsedData[index] = object
 
-    console.log(parsedData)
     fs.writeFileSync(filePath, JSON.stringify(parsedData))
 }
-export function list() {
+
+export function resolve(options) {
+    if (!options.hasOwnProperty("resolve")) return
+
+    let parsedData = JSON.parse(fs.readFileSync(filePath))
+    parsedData[options.resolve].resolved = true
+    fs.writeFileSync(filePath, JSON.stringify(parsedData))
+}
+
+export function list(options) {
     let resToGive = "";
-    let restoReceive = "";
+    let resToReceive = "";
+    let ResResTG = "";
+    let ResResTR = "";
     let parsedData = JSON.parse(fs.readFileSync(filePath))
 
     for (const trans in parsedData) {
-        if (parsedData[trans].togive) {
-            resToGive += (trans + ": ")
-            resToGive += parsedData[trans].title + "\n"
-            resToGive += "   " + parsedData[trans].value + (parsedData[trans].target != '' ? " to " + parsedData[trans].target : '') + "\n"
-            resToGive += "   " + parsedData[trans].description + "\n"
+        if (parsedData[trans].resolved) {
+            if (parsedData[trans].togive) {
+                ResResTG += (trans + ": ")
+                ResResTG += parsedData[trans].title + "\n"
+                ResResTG += "   " + parsedData[trans].value + (parsedData[trans].target != '' ? " to " + parsedData[trans].target : '') + "\n"
+                ResResTG += "   " + parsedData[trans].description + "\n"
+            }
+            else {
+                ResResTR += (trans + ": ")
+                ResResTR += parsedData[trans].title + "\n"
+                ResResTR += "   " + parsedData[trans].value + (parsedData[trans].target != '' ? " from " + parsedData[trans].target : '') + "\n"
+                ResResTR += "   " + parsedData[trans].description + "\n"
+            }
         }
         else {
-            restoReceive += (trans + ": ")
-            restoReceive += parsedData[trans].title + "\n"
-            restoReceive += "   " + parsedData[trans].value + (parsedData[trans].target != '' ? " from " + parsedData[trans].target : '') + "\n"
-            restoReceive += "   " + parsedData[trans].description + "\n"
+            if (parsedData[trans].togive) {
+                resToGive += (trans + ": ")
+                resToGive += parsedData[trans].title + "\n"
+                resToGive += "   " + parsedData[trans].value + (parsedData[trans].target != '' ? " to " + parsedData[trans].target : '') + "\n"
+                resToGive += "   " + parsedData[trans].description + "\n"
+            }
+            else {
+                resToReceive += (trans + ": ")
+                resToReceive += parsedData[trans].title + "\n"
+                resToReceive += "   " + parsedData[trans].value + (parsedData[trans].target != '' ? " from " + parsedData[trans].target : '') + "\n"
+                resToReceive += "   " + parsedData[trans].description + "\n"
+            }
         }
     }
-    console.log("GIVE\n" + resToGive)
-    console.log("RECEIVE\n" + restoReceive)
+
+    if (options.list) {
+        console.log("GIVE\n" + (resToGive == "" ? "Nothing to give" : resToGive))
+        console.log("RECEIVE\n" + (resToReceive == "" ? "Nothing to receive" : resToReceive))
+        if (options.showRes && (ResResTG != "" || ResResTR != "")) {
+            console.log("\nRESOLVED:")
+            console.log(ResResTG == "" ? "" : ("GIVE\n" + ResResTG))
+            console.log(ResResTR == "" ? "" : ("RECEIVE\n" + ResResTR))
+        }
+    }
 }
