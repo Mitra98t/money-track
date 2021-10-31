@@ -2,6 +2,17 @@
 
 A simple way to track transaction locally
 
+## Index
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Idea](#idea)
+- [Usage](#usage)
+  - [Usage Examples](#usage-examples)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Idea
 
 I always have my terminal open, I also like to have all my tools in one place.
